@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions;
 using Domain.Aggregates.Game;
+using Infrastructure.Configuration.Options;
 using Infrastructure.Data;
 using Infrastructure.Data.Repositories;
 using Infrastructure.Random;
@@ -14,7 +15,8 @@ public static class DI
     {
         services
             .AddDatabase()
-            .AddRandomProvider();
+            .AddRandomProvider()
+            .AddGameSettings();
             
         return services;
     }
@@ -32,6 +34,16 @@ public static class DI
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
         services.AddScoped<IGameRepository, GameRepository>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddGameSettings(this IServiceCollection services)
+    {
+        services.AddOptions<GameSettings>()
+            .BindConfiguration("GameSettings")
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         return services;
     }
