@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions;
 using Domain.Aggregates.Game;
 using Infrastructure.Data;
+using Infrastructure.Data.Repositories;
 using Infrastructure.Random;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,7 @@ public static class DI
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IGameRepository, GameRepository>();
 
         return services;
     }
