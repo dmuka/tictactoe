@@ -13,7 +13,7 @@ public class Game
     public int Version { get; private set; }
     public int MoveCount { get; private set; }
 
-    private readonly IRandomProvider _randomProvider;
+    private readonly IRandomProvider? _randomProvider;
 
     private Game() { }
 
@@ -58,7 +58,7 @@ public class Game
     {
         ValidateMove(player, row, col);
 
-        if (MoveCount > 0 && MoveCount % 3 == 0 && _randomProvider.NextDouble() < 0.1)
+        if (MoveCount > 0 && MoveCount % 3 == 0 && _randomProvider?.NextDouble() < 0.1)
         {
             player = player == GameConstants.XPlayer ? GameConstants.OPlayer : GameConstants.XPlayer;
         }
