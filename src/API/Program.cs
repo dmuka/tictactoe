@@ -1,6 +1,24 @@
+using API;
+using Application;
+using Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+    .AddApplication()
+    .AddInfrastructure()
+    .AddPresentation();
+
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+await app.InitializeDatabaseAsync();
 
-app.Run();
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
+app.UsePresentation();
+app.MapHealthChecks("/health");
+
+await app.RunAsync();
