@@ -19,6 +19,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UsePresentation();
-app.MapHealthChecks("/health");
 
 await app.RunAsync();

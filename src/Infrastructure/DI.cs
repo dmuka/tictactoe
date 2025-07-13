@@ -16,8 +16,9 @@ public static class DI
         services
             .AddDatabase()
             .AddRandomProvider()
-            .AddGameSettings();
-            
+            .AddGameSettings()
+            .AddHealthCheck();
+        
         return services;
     }
     
@@ -51,6 +52,13 @@ public static class DI
     private static IServiceCollection AddRandomProvider(this IServiceCollection services)
     {
         services.AddSingleton<IRandomProvider, RandomProvider>();
+
+        return services;
+    }
+    
+    private static IServiceCollection AddHealthCheck(this IServiceCollection services)
+    {
+        services.AddHealthChecks();
 
         return services;
     }
