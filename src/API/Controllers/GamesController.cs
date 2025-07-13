@@ -1,5 +1,6 @@
 ﻿using Application.DTOs;
 using Application.UseCases.CreateGame;
+using Application.UseCases.GetAllGames;
 using Application.UseCases.GetGame;
 using Infrastructure.Configuration.Options;
 using MediatR;
@@ -36,5 +37,16 @@ public class GamesController(IMediator mediator) : ControllerBase
         Response.Headers.ETag = $"W/\"{game.Version}\"";
         
         return Ok(game);
+    }
+    
+    [HttpGet]
+    [ProducesResponseType(typeof(GameDto[]), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GelAllGames()
+    {
+        var query = new GetAllGamesQuery();
+        
+        var gamesDtos = await mediator.Send(query);
+        
+        return Ok(gamesDtos);
     }
 }
