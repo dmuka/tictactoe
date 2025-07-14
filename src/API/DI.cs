@@ -61,8 +61,6 @@ public static class DI
         });
 
         app.MapControllers();
-        app.MapGet("/debug/endpoints", (IEnumerable<EndpointDataSource> endpointSources) =>
-            string.Join("\n", endpointSources.SelectMany(source => source.Endpoints)));
 
         return app;
     }

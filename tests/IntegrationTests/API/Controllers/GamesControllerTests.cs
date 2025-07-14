@@ -2,6 +2,7 @@
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
+using API;
 using API.Dtos;
 using Application.DTOs;
 using Domain.Aggregates.Game;

@@ -1,6 +1,7 @@
-using API;
 using Application;
 using Infrastructure;
+
+namespace API;
 
 public class Program
 {
