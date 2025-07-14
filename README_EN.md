@@ -91,13 +91,9 @@ Makes a move in the game.
 ```
 
 **Response:**
-
 - `200 OK`: Updated game object
-
 - `400 Bad Request`: Invalid move or data format
-
 - `404 Not Found`: Game not found
-
 - `409 Conflict`: Version conflict (game was modified since last request)
 
 ## Data Model
@@ -119,9 +115,9 @@ Makes a move in the game.
 - 10% chance every 3 moves for a "random move" (player symbol change)
 
 ## Game Settings
-Game settings are configured via GameSettings options:
-- BoardSize: Game board size
-- WinCondition: Number of symbols in row to win
+Game settings are configured via ``GameSettings`` options:
+- ``BoardSize``: Game board size
+- ``WinCondition``: Number of symbols in row to win
 
 ## Application Configuration
 **appsettings.json**
@@ -160,7 +156,7 @@ tictactoe-api
 **Requirements**
 
 - .NET 9.0 SDK
-- Docker (опционально)
+- Docker (optionally)
 
 **Local Rub**
 ```shell
@@ -178,7 +174,7 @@ docker-compose up -d
 ```
 
 ## API Testing
-You can use any http client or file API.http in the solution root.
+You can use any http client or file ``API.http`` in the solution root.
 
 ```shell
 # Create game
@@ -198,6 +194,6 @@ dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 ```
 
 ## Troubleshooting
-- Проверьте порты и настройки брандмауэра
-- Убедитесь, что BoardSize ≥ 3
-- Для отладки установите LogLevel: Debug в appsettings.Development.json
+- Check the ports and firewall settings
+- Ensure that ``BoardSize`` is ≥ 3
+- For debugging, set ``LogLevel: Debug`` in ``appsettings.Development.json``
