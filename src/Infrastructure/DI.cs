@@ -28,7 +28,7 @@ public static class DI
         {
             const Environment.SpecialFolder folder = Environment.SpecialFolder.LocalApplicationData;
             var path = Environment.GetFolderPath(folder);
-            var dbPath = Path.Join(path, "tictactoe.db");
+            var dbPath = Path.Join(path, "tictactoe_game.db");
             
             options.UseSqlite($"Data Source={dbPath}");
         });
