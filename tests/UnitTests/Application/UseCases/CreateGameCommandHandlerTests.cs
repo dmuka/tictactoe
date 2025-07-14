@@ -10,6 +10,8 @@ public class CreateGameCommandHandlerTests
 {
     private const int BoardSize = 3;
     private const int WinCondition = 3;
+    
+    private readonly CancellationToken _cancellationToken = CancellationToken.None;
         
     private readonly Mock<IGameRepository> _mockGameRepository;
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
@@ -35,16 +37,16 @@ public class CreateGameCommandHandlerTests
 
         Game capturedGame = null!;
         _mockGameRepository
-            .Setup(repository => repository.AddAsync(It.IsAny<Game>(), It.IsAny<CancellationToken>()))
+            .Setup(repository => repository.AddAsync(It.IsAny<Game>(), _cancellationToken))
             .Callback<Game, CancellationToken>((game, _) => capturedGame = game)
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var result = await _handler.Handle(command, _cancellationToken);
 
         // Assert
-        _mockGameRepository.Verify(repository => repository.AddAsync(It.IsAny<Game>(), It.IsAny<CancellationToken>()), Times.Once);
-        _mockUnitOfWork.Verify(uow => uow.CommitAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _mockGameRepository.Verify(repository => repository.AddAsync(It.IsAny<Game>(), _cancellationToken), Times.Once);
+        _mockUnitOfWork.Verify(uow => uow.CommitAsync(_cancellationToken), Times.Once);
             
         Assert.NotNull(capturedGame);
         Assert.Equal(command.BoardSize, capturedGame.BoardSize);

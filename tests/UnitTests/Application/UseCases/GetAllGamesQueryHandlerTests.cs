@@ -6,6 +6,8 @@ namespace UnitTests.Application.UseCases;
 
 public class GetAllGamesQueryHandlerTests
 {
+    private readonly CancellationToken _cancellationToken = CancellationToken.None;
+ 
     private readonly Mock<IGameRepository> _mockGameRepository;
     private readonly Mock<IRandomProvider> _randomMock;
     
@@ -26,18 +28,18 @@ public class GetAllGamesQueryHandlerTests
     {
         // Arrange
         _mockGameRepository
-            .Setup(repo => repo.GetAllAsync(It.IsAny<CancellationToken>()))
+            .Setup(repo => repo.GetAllAsync(_cancellationToken))
             .ReturnsAsync([]);
 
         var query = new GetAllGamesQuery();
 
         // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
+        var result = await _handler.Handle(query, _cancellationToken);
 
         // Assert
         Assert.NotNull(result);
         Assert.Empty(result);
-        _mockGameRepository.Verify(repo => repo.GetAllAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _mockGameRepository.Verify(repo => repo.GetAllAsync(_cancellationToken), Times.Once);
     }
 
     [Fact]
@@ -52,13 +54,13 @@ public class GetAllGamesQueryHandlerTests
         };
 
         _mockGameRepository
-            .Setup(repo => repo.GetAllAsync(It.IsAny<CancellationToken>()))
+            .Setup(repo => repo.GetAllAsync(_cancellationToken))
             .ReturnsAsync(games);
 
         var query = new GetAllGamesQuery();
 
         // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
+        var result = await _handler.Handle(query, _cancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -73,7 +75,7 @@ public class GetAllGamesQueryHandlerTests
             Assert.Equal(games[i].Status.ToString(), result[i].Status);
         }
             
-        _mockGameRepository.Verify(repo => repo.GetAllAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _mockGameRepository.Verify(repo => repo.GetAllAsync(_cancellationToken), Times.Once);
     }
         
     [Fact]
@@ -85,13 +87,13 @@ public class GetAllGamesQueryHandlerTests
             .ToArray();
 
         _mockGameRepository
-            .Setup(repo => repo.GetAllAsync(It.IsAny<CancellationToken>()))
+            .Setup(repo => repo.GetAllAsync(_cancellationToken))
             .ReturnsAsync(games);
 
         var query = new GetAllGamesQuery();
 
         // Act
-        var result = await _handler.Handle(query, CancellationToken.None);
+        var result = await _handler.Handle(query, _cancellationToken);
 
         // Assert
         Assert.NotNull(result);
@@ -102,6 +104,6 @@ public class GetAllGamesQueryHandlerTests
             
         Assert.True(gameIds.SetEquals(resultIds));
             
-        _mockGameRepository.Verify(repo => repo.GetAllAsync(It.IsAny<CancellationToken>()), Times.Once);
+        _mockGameRepository.Verify(repo => repo.GetAllAsync(_cancellationToken), Times.Once);
     }
 }
