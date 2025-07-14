@@ -1,0 +1,30 @@
+@TicTacToe_HostAddress = http://localhost:5126
+
+### Get all games
+GET {{TicTacToe_HostAddress}}/api/games
+Accept: application/json
+
+### Create a new game
+POST {{TicTacToe_HostAddress}}/api/games
+Accept: application/json
+Content-Type: application/json
+
+### Get game by ID
+GET {{TicTacToe_HostAddress}}/api/games/00000000-0000-0000-0000-000000000000
+Accept: application/json
+
+### Make a move in a game
+POST {{TicTacToe_HostAddress}}/api/games/00000000-0000-0000-0000-000000000000/moves
+Accept: application/json
+Content-Type: application/json
+If-Match: W/"1"
+
+{
+  "player": 1,
+  "row": 0,
+  "col": 0
+}
+
+### Check health status
+GET {{TicTacToe_HostAddress}}/health
+Accept: application/json

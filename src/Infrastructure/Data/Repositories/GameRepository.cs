@@ -1,5 +1,4 @@
-﻿using Domain.Aggregates;
-using Domain.Aggregates.Game;
+﻿using Domain.Aggregates.Game;
 using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
