@@ -15,7 +15,7 @@ public class GamesControllerTests : IClassFixture<WebApplicationFactory<Program>
 {
     private readonly HttpClient _client;
 
-    private MakeMoveRequest _move_XPlayer_Row0_ColO;
+    private readonly MakeMoveRequest _moveXPlayerRow0ColO;
 
     public GamesControllerTests(WebApplicationFactory<Program> factory)
     {
@@ -27,7 +27,7 @@ public class GamesControllerTests : IClassFixture<WebApplicationFactory<Program>
         });
         
         _client = factory1.CreateClient();
-        _move_XPlayer_Row0_ColO = new MakeMoveRequest
+        _moveXPlayerRow0ColO = new MakeMoveRequest
         {
             Player = GameConstants.XPlayer,
             Row = 0,
@@ -44,8 +44,8 @@ public class GamesControllerTests : IClassFixture<WebApplicationFactory<Program>
         // Assert
         response.EnsureSuccessStatusCode();
         var game = await response.Content.ReadFromJsonAsync<GameDto>();
-        Assert.Equal(3, game!.BoardSize);
-        Assert.Equal(GameConstants.XPlayer, game.CurrentPlayer);
+        Assert.Equal(3, game?.BoardSize);
+        Assert.Equal(GameConstants.XPlayer, game?.CurrentPlayer);
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class GamesControllerTests : IClassFixture<WebApplicationFactory<Program>
         
         // Act
         var response = await _client.PostAsJsonAsync(
-            $"/api/games/{game!.Id}/moves", _move_XPlayer_Row0_ColO);
+            $"/api/games/{game?.Id}/moves", _moveXPlayerRow0ColO);
         
         // Assert
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -70,17 +70,17 @@ public class GamesControllerTests : IClassFixture<WebApplicationFactory<Program>
         var createResponse = await _client.PostAsync("/api/games", null);
         var game = await createResponse.Content.ReadFromJsonAsync<GameDto>();
         
-        _client.DefaultRequestHeaders.Add("If-Match", $"W/\"{game!.Version}\"");
+        _client.DefaultRequestHeaders.Add("If-Match", $"W/\"{game?.Version}\"");
         
         // Act
         var response = await _client.PostAsJsonAsync(
-            $"/api/games/{game.Id}/moves", _move_XPlayer_Row0_ColO);
+            $"/api/games/{game?.Id}/moves", _moveXPlayerRow0ColO);
         
         // Assert
         response.EnsureSuccessStatusCode();
         var updatedGame = await response.Content.ReadFromJsonAsync<GameDto>();
-        Assert.Equal(GameConstants.OPlayer, updatedGame!.CurrentPlayer);
-        Assert.Equal(GameConstants.XPlayer, updatedGame.Board[0][0]);
+        Assert.Equal(GameConstants.OPlayer, updatedGame?.CurrentPlayer);
+        Assert.Equal(GameConstants.XPlayer, updatedGame?.Board[0][0]);
     }
 
     [Fact]
@@ -91,18 +91,18 @@ public class GamesControllerTests : IClassFixture<WebApplicationFactory<Program>
         var game = await createResponse.Content.ReadFromJsonAsync<GameDto>();
         
         // First move: Version up
-        var firstMove = _move_XPlayer_Row0_ColO;
-        _client.DefaultRequestHeaders.Add("If-Match", $"W/\"{game!.Version}\"");
-        await _client.PostAsJsonAsync($"/api/games/{game.Id}/moves", firstMove);
+        var firstMove = _moveXPlayerRow0ColO;
+        _client.DefaultRequestHeaders.Add("If-Match", $"W/\"{game?.Version}\"");
+        await _client.PostAsJsonAsync($"/api/games/{game?.Id}/moves", firstMove);
         
         // Second move: ETag with old version
         var secondMove = new MakeMoveRequest { Player = GameConstants.OPlayer, Row = 1, Col = 1 };
         _client.DefaultRequestHeaders.Remove("If-Match");
-        _client.DefaultRequestHeaders.Add("If-Match", $"W/\"{game.Version}\"");
+        _client.DefaultRequestHeaders.Add("If-Match", $"W/\"{game?.Version}\"");
         
         // Act
         var response = await _client.PostAsJsonAsync(
-            $"/api/games/{game.Id}/moves", secondMove);
+            $"/api/games/{game?.Id}/moves", secondMove);
         
         // Assert
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
@@ -132,25 +132,25 @@ public class GamesControllerTests : IClassFixture<WebApplicationFactory<Program>
             PropertyNameCaseInsensitive = true
         });
         
-        var getResponse = await _client.GetAsync($"/api/Games/{game.Id}");
+        var getResponse = await _client.GetAsync($"/api/Games/{game?.Id}");
         getResponse.EnsureSuccessStatusCode();
         var etag = getResponse.Headers.ETag?.Tag;
         
         var content = new StringContent(
-            JsonSerializer.Serialize(_move_XPlayer_Row0_ColO),
+            JsonSerializer.Serialize(_moveXPlayerRow0ColO),
             Encoding.UTF8,
             "application/json");
         
-        var requestFirstMove = new HttpRequestMessage(HttpMethod.Post, $"/api/Games/{game.Id}/moves")
+        var requestFirstMove = new HttpRequestMessage(HttpMethod.Post, $"/api/Games/{game?.Id}/moves")
         {
             Content = content,
             Headers = { { "If-Match", etag } }
         };
         
-        var requestSecondMove = new HttpRequestMessage(HttpMethod.Post, $"/api/Games/{game.Id}/moves")
+        var requestSecondMove = new HttpRequestMessage(HttpMethod.Post, $"/api/Games/{game?.Id}/moves")
         {
             Content = new StringContent(
-                JsonSerializer.Serialize(_move_XPlayer_Row0_ColO),
+                JsonSerializer.Serialize(_moveXPlayerRow0ColO),
                 Encoding.UTF8,
                 "application/json"),
             Headers = { { "If-Match", etag } }
