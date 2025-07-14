@@ -1,4 +1,5 @@
-﻿using Infrastructure.Data;
+﻿using API.Infrastructure;
+using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -48,6 +49,8 @@ public static class DI
 
     public static WebApplication UsePresentation(this WebApplication app)
     {
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
+        
         app.UseSwagger();
         app.UseSwaggerUI(c => 
         {

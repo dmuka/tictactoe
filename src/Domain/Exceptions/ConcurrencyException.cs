@@ -1,3 +1,3 @@
 ﻿namespace Domain.Exceptions;
 
-public class ConcurrencyException() : Exception("Version mismatch detected");
+public class ConcurrencyException() : Exception("Version mismatch detected.");

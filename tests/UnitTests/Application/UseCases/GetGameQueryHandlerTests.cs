@@ -63,7 +63,7 @@ public class GetGameQueryHandlerTests
         var exception = await Assert.ThrowsAsync<GameNotFoundException>(() => 
             _handler.Handle(query, _cancellationToken));
             
-        Assert.Equal($"Game with id {gameId} not found", exception.Message);
+        Assert.Equal($"Game with id {gameId} not found.", exception.Message);
         _mockRepository.Verify(repo => repo.GetByIdAsync(gameId, _cancellationToken), Times.Once);
     }
 }

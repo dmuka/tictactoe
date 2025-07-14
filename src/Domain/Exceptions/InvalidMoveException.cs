@@ -2,7 +2,7 @@
 
 public class InvalidMoveException : Exception
 {
-    public InvalidMoveException() : base("Invalid move")
+    public InvalidMoveException() : base("Invalid move.")
     {
     }
 
