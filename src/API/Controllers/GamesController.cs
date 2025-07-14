@@ -15,7 +15,12 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class GamesController(IMediator mediator) : ControllerBase
-{
+{    
+    /// <summary>
+    /// Creates a new game.
+    /// </summary>
+    /// <param name="settings">The game settings including board size and win condition.</param>
+    /// <returns>The created game details.</returns>
     [HttpPost]
     [ProducesResponseType(typeof(GameDto), StatusCodes.Status201Created)]
     public async Task<IActionResult> CreateGame(IOptions<GameSettings> settings)
@@ -27,6 +32,11 @@ public class GamesController(IMediator mediator) : ControllerBase
         return CreatedAtAction(nameof(CreateGame), new { id = game.Id }, game);
     }
     
+    /// <summary>
+    /// Retrieves a game by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the game.</param>
+    /// <returns>The game details if found; otherwise, a 404 status.</returns>
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(GameDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -41,6 +51,10 @@ public class GamesController(IMediator mediator) : ControllerBase
         return Ok(game);
     }
     
+    /// <summary>
+    /// Retrieves all games.
+    /// </summary>
+    /// <returns>A list of all games.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(GameDto[]), StatusCodes.Status200OK)]
     public async Task<IActionResult> GelAllGames()
@@ -52,6 +66,13 @@ public class GamesController(IMediator mediator) : ControllerBase
         return Ok(gamesDtos);
     }
 
+    /// <summary>
+    /// Makes a move in a game.
+    /// </summary>
+    /// <param name="id">The unique identifier of the game.</param>
+    /// <param name="request">The move request containing player and move details.</param>
+    /// <param name="ifMatch">The ETag header value for concurrency control.</param>
+    /// <returns>The updated game details if successful; otherwise, an error status.</returns>
     [HttpPost("{id:guid}/moves")]
     [ProducesResponseType(typeof(GameDto), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
