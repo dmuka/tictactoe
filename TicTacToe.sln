@@ -11,7 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution 
 		compose.yaml = compose.yaml
 		Dockerfile = Dockerfile
 		README_RU.md = README_RU.md
-		README_EN.md = README_EN.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "API", "src\API\API.csproj", "{CFAF4D22-03B1-4D9D-A57C-76AE4F555B68}"
