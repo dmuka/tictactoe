@@ -1,8 +1,12 @@
-﻿using API.Infrastructure;
+﻿using System.Text.Json;
+using API.Infrastructure;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace API;
 
@@ -35,13 +39,7 @@ public static class DI
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Tic-Tac-Toe API", Version = "v1" });
             
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Description = "JWT Authorization header",
-                Name = "Authorization",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey
-            });
+            c.DocumentFilter<HealthCheckDocumentFilter>();
         });
 
         return services;
@@ -51,14 +49,19 @@ public static class DI
     {
         app.UseMiddleware<ExceptionHandlingMiddleware>();
         
+        app.MapHealthChecks("/health")
+            .WithDisplayName("Health Check").WithTags("Health");
+        
         app.UseSwagger();
         app.UseSwaggerUI(c => 
         {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tic-Tac-Toe API v1");
+            c.DisplayRequestDuration();
         });
 
         app.MapControllers();
-        app.MapHealthChecks("/health");
+        app.MapGet("/debug/endpoints", (IEnumerable<EndpointDataSource> endpointSources) =>
+            string.Join("\n", endpointSources.SelectMany(source => source.Endpoints)));
 
         return app;
     }
