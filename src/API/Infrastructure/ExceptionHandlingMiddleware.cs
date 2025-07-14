@@ -43,22 +43,22 @@ public class ExceptionHandlingMiddleware(
         {
             GameNotFoundException ex => (
                 StatusCodes.Status404NotFound,
-                "Game not found",
+                ProblemConstants.GameNotFound,
                 ex.Message),
                 
             InvalidMoveException ex => (
                 StatusCodes.Status400BadRequest,
-                "Invalid move",
+                ProblemConstants.InvalidMoveRequest,
                 ex.Message),
                 
             ConcurrencyException => (
                 StatusCodes.Status409Conflict,
-                "Concurrency conflict",
+                ProblemConstants.ConcurrencyConflict,
                 "The game state has changed since your last request"),
                 
             _ => (
                 StatusCodes.Status500InternalServerError,
-                "Server Error",
+                ProblemConstants.ServerInternalError,
                 "An unexpected error occurred")
         };
 
