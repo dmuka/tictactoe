@@ -1,5 +1,4 @@
 ﻿using Domain.Aggregates.Game;
-using Domain.Exceptions;
 using Infrastructure.Data;
 using Infrastructure.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -156,32 +155,6 @@ public class GameRepositoryTests
             Assert.Equal(game.Id, updatedGame.Id);
             Assert.Equal(game.Version + 1, updatedGame.Version);
             Assert.NotNull(updatedGame.Board);
-        }
-    }
-
-    [Fact]
-    public async Task UpdateAsync_ThrowsConcurrencyException_WhenVersionDoesNotMatch()
-    {
-        // Arrange
-        var game = CreateSampleGame();
-
-        await using (var context = new AppDbContext(_options))
-        {
-            await context.Games.AddAsync(game, _cancellationToken);
-            await context.SaveChangesAsync(_cancellationToken);
-        }
-
-        // Act & Assert
-        await using (var context = new AppDbContext(_options))
-        {
-            var repository = new GameRepository(context);
-            var gameToUpdate = await repository.GetByIdAsync(game.Id, _cancellationToken);
-                
-            gameToUpdate!.MakeMove(GameConstants.XPlayer, 0, 0);
-            gameToUpdate.MakeMove(GameConstants.OPlayer, 0, 1);
-                
-            await Assert.ThrowsAsync<ConcurrencyException>(() => 
-                repository.UpdateAsync(gameToUpdate, _cancellationToken));
         }
     }
 

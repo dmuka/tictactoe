@@ -10,29 +10,55 @@ public class MakeMoveCommandHandler(
     IGameRepository gameRepository,
     IUnitOfWork unitOfWork) : IRequestHandler<MakeMoveCommand, GameDto>
 {
+    private readonly Lock _lockObject = new ();
+
     public async Task<GameDto> Handle(MakeMoveCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-        
-        try
-        {
-            var game = await gameRepository.GetByIdAsync(request.GameId, cancellationToken);
-            
-            if (game == null) throw new GameNotFoundException(request.GameId);
+        var game = await gameRepository.GetByIdAsync(request.GameId, cancellationToken);
+        if (game is null) throw new GameNotFoundException(request.GameId);
 
-            if (game.Version != request.ExpectedVersion) throw new ConcurrencyException();
+        if (IsMoveMade(request, game)) return game.ToDto();
 
-            game.MakeMove(request.Player, request.Row, request.Col);
-            await gameRepository.UpdateAsync(game, cancellationToken);
-            
-            await unitOfWork.CommitAsync(cancellationToken);
-            
-            return game.ToDto();
-        }
-        catch
+        lock (_lockObject)
         {
-            await unitOfWork.RollbackAsync(cancellationToken);
-            throw;
+            game = gameRepository.GetByIdAsync(request.GameId, cancellationToken).GetAwaiter().GetResult();
+            if (game is null) throw new GameNotFoundException(request.GameId);
+    
+            if (game.Version != request.ExpectedVersion)
+            {
+                if (IsMoveMadeByRequestPlayer(request, game)) return game.ToDto();
+                
+                throw new ConcurrencyException();
+            }
+
+            unitOfWork.BeginTransactionAsync(cancellationToken).GetAwaiter().GetResult();
+            
+            try
+            {
+                game.MakeMove(request.Player, request.Row, request.Col);
+                gameRepository.UpdateAsync(game, cancellationToken).GetAwaiter().GetResult();
+                
+                unitOfWork.CommitAsync(cancellationToken).GetAwaiter().GetResult();
+                
+                return game.ToDto();
+            }
+            catch
+            {
+                unitOfWork.RollbackAsync(cancellationToken).GetAwaiter().GetResult();
+                throw;
+            }
         }
+    }
+
+    private static bool IsMoveMade(MakeMoveCommand request, Game game)
+    {
+        return game.Version != request.ExpectedVersion &&
+               IsMoveMadeByRequestPlayer(request, game);
+    }
+
+    private static bool IsMoveMadeByRequestPlayer(MakeMoveCommand request, Game game)
+    {
+        return game.IsMoveMade(request.Row, request.Col) && 
+               game.GetPlayerAtPosition(request.Row, request.Col) == request.Player;
     }
 }

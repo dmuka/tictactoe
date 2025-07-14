@@ -74,6 +74,16 @@ public class Game
             CurrentPlayer = CurrentPlayer == GameConstants.XPlayer ? GameConstants.OPlayer : GameConstants.XPlayer;
         }
     }
+    
+    public bool IsMoveMade(int row, int col)
+    {
+        return Board[row][col] != "";
+    }
+
+    public string GetPlayerAtPosition(int row, int col)
+    {
+        return Board[row][col];
+    }
 
     private void ValidateMove(string player, int row, int col)
     {

@@ -28,7 +28,7 @@ public class GameRepository(AppDbContext context) : IGameRepository
     public async Task UpdateAsync(Game game, CancellationToken cancellationToken)
     {
         var existingGame = await context.Games
-            .FirstOrDefaultAsync(gameDb => gameDb.Id == game.Id && gameDb.Version == game.Version - 1, cancellationToken);
+            .FirstOrDefaultAsync(gameDb => gameDb.Id == game.Id, cancellationToken);
 
         if (existingGame is null) throw new ConcurrencyException();
     

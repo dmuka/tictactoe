@@ -50,7 +50,7 @@ public class MakeMoveCommandHandlerTests
 
         // Assert
         _mockUnitOfWork.Verify(uow => uow.BeginTransactionAsync(_cancellationToken), Times.Once);
-        _mockGameRepository.Verify(repo => repo.GetByIdAsync(gameId, _cancellationToken), Times.Once);
+        _mockGameRepository.Verify(repo => repo.GetByIdAsync(gameId, _cancellationToken), Times.Exactly(2));
         _mockGameRepository.Verify(repo => repo.UpdateAsync(_game, _cancellationToken), Times.Once);
         _mockUnitOfWork.Verify(uow => uow.CommitAsync(_cancellationToken), Times.Once);
         _mockUnitOfWork.Verify(uow => uow.RollbackAsync(_cancellationToken), Times.Never);
@@ -77,8 +77,8 @@ public class MakeMoveCommandHandlerTests
         await Assert.ThrowsAsync<GameNotFoundException>(async () => 
             await _handler.Handle(command, _cancellationToken));
             
-        _mockUnitOfWork.Verify(uow => uow.BeginTransactionAsync(_cancellationToken), Times.Once);
-        _mockUnitOfWork.Verify(uow => uow.RollbackAsync(_cancellationToken), Times.Once);
+        _mockUnitOfWork.Verify(uow => uow.BeginTransactionAsync(_cancellationToken), Times.Never);
+        _mockUnitOfWork.Verify(uow => uow.RollbackAsync(_cancellationToken), Times.Never);
         _mockUnitOfWork.Verify(uow => uow.CommitAsync(_cancellationToken), Times.Never);
     }
 
@@ -99,8 +99,8 @@ public class MakeMoveCommandHandlerTests
         await Assert.ThrowsAsync<ConcurrencyException>(async () => 
             await _handler.Handle(command, _cancellationToken));
             
-        _mockUnitOfWork.Verify(uow => uow.BeginTransactionAsync(_cancellationToken), Times.Once);
-        _mockUnitOfWork.Verify(uow => uow.RollbackAsync(_cancellationToken), Times.Once);
+        _mockUnitOfWork.Verify(uow => uow.BeginTransactionAsync(_cancellationToken), Times.Never);
+        _mockUnitOfWork.Verify(uow => uow.RollbackAsync(_cancellationToken), Times.Never);
         _mockUnitOfWork.Verify(uow => uow.CommitAsync(_cancellationToken), Times.Never);
     }
 
