@@ -71,7 +71,9 @@ public class GamesController(IMediator mediator) : ControllerBase
     /// </summary>
     /// <param name="id">The unique identifier of the game.</param>
     /// <param name="request">The move request containing player and move details.</param>
-    /// <param name="ifMatch">The ETag header value for concurrency control.</param>
+    /// <param name="ifMatch">The ETag header value for concurrency control in the format:
+    /// W/"version", where "W/" indicates a weak validator and
+    /// "version" is the current version of the resource (integer sequential number).</param>
     /// <returns>The updated game details if successful; otherwise, an error status.</returns>
     [HttpPost("{id:guid}/moves")]
     [ProducesResponseType(typeof(GameDto), StatusCodes.Status200OK)]
