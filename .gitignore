@@ -142,6 +142,12 @@ _TeamCity*
 *.coverage
 *.coveragexml
 
+# Coverlet coverage
+[Tt]est[Rr]esults/
+
+# Coverage report
+[Cc]overage[Rr]eport/
+
 # NCrunch
 _NCrunch_*
 .*crunch*.local.xml

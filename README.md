@@ -192,7 +192,12 @@ curl -X POST http://localhost:8080/api/games/{id}/moves \
 dotnet test
 dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 ```
+Or use ``bash`` script ``coverage.sh`` in the solution root.
+Using git bash:
+```sh
 
+./coverage.sh
+```
 ## Troubleshooting
 - Check the ports and firewall settings
 - Ensure that ``BoardSize`` is ≥ 3
