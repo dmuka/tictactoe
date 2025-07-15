@@ -85,7 +85,7 @@ public class GamesController(IMediator mediator) : ControllerBase
         [FromBody] MakeMoveRequest request,
         [FromHeader(Name = "If-Match")] string ifMatch)
     {
-        if (!int.TryParse(ifMatch?.Replace("W/\"", "").Replace("\"", ""), out var version))
+        if (!int.TryParse(ifMatch.Replace("W/\"", "").Replace("\"", ""), out var version))
         {
             return BadRequest(new ProblemDetails
             {

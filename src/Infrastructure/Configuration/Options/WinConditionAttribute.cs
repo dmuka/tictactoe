@@ -4,7 +4,7 @@ namespace Infrastructure.Configuration.Options;
 
 public class WinConditionAttribute : ValidationAttribute
 {
-    protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+    protected override ValidationResult IsValid(object? value, ValidationContext validationContext)
     {
         if (value is not int winCondition)
         {

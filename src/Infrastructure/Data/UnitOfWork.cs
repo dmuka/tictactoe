@@ -17,16 +17,16 @@ public class UnitOfWork(AppDbContext context) : IUnitOfWork
         try
         {
             await context.SaveChangesAsync(cancellationToken);
-            if (_transaction is not null) await _transaction.CommitAsync(cancellationToken);
+            if (_transaction is not null)
+            {
+                await _transaction.CommitAsync(cancellationToken);
+                await _transaction.DisposeAsync();
+            }
         }
         catch
         {
             await RollbackAsync(cancellationToken);
             throw;
-        }
-        finally
-        {
-            if (_transaction is not null) await _transaction.DisposeAsync();
         }
     }
 

@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Configuration.Options;
 
-public sealed record GameSettings
+public record GameSettings
 {
     [Required, Range(3, 25)]
     public required int BoardSize { get; set; } 
