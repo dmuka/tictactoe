@@ -1,5 +1,6 @@
 using Application;
 using Infrastructure;
+using Serilog;
 
 namespace API;
 
@@ -8,6 +9,9 @@ public class Program
     public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        builder.Host.UseSerilog((context, loggerConfig) => 
+            loggerConfig.ReadFrom.Configuration(context.Configuration));
 
         builder.Services
             .AddApplication()

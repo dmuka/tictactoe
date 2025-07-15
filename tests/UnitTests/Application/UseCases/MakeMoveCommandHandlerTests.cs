@@ -2,6 +2,7 @@
 using Application.UseCases.MakeMove;
 using Domain.Aggregates.Game;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace UnitTests.Application.UseCases;
@@ -16,6 +17,7 @@ public class MakeMoveCommandHandlerTests
     
     private readonly Mock<IGameRepository> _mockGameRepository;
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
+    private readonly Mock<ILogger<MakeMoveCommandHandler>> _mockLogger;
 
     private readonly MakeMoveCommandHandler _handler;
 
@@ -23,13 +25,14 @@ public class MakeMoveCommandHandlerTests
     {
         _mockGameRepository = new Mock<IGameRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
+        _mockLogger = new Mock<ILogger<MakeMoveCommandHandler>>();
 
         var randomMock = new Mock<IRandomProvider>();
         randomMock.Setup(r => r.NextDouble()).Returns(0.5);
         
         _game = new Game(BoardSize, WinCondition, randomMock.Object);
             
-        _handler = new MakeMoveCommandHandler(_mockGameRepository.Object, _mockUnitOfWork.Object);
+        _handler = new MakeMoveCommandHandler(_mockGameRepository.Object, _mockUnitOfWork.Object, _mockLogger.Object);
     }
 
     [Fact]

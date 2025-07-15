@@ -3,6 +3,7 @@ using Application.DTOs;
 using Domain.Aggregates.Game;
 using Domain.Exceptions;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UseCases.MakeMove;
 
@@ -11,7 +12,8 @@ namespace Application.UseCases.MakeMove;
 /// </summary>
 public class MakeMoveCommandHandler(
     IGameRepository gameRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<MakeMoveCommand, GameDto>
+    IUnitOfWork unitOfWork,
+    ILogger<MakeMoveCommandHandler> logger) : IRequestHandler<MakeMoveCommand, GameDto>
 {
     private readonly Lock _lockObject = new ();
 
@@ -28,7 +30,12 @@ public class MakeMoveCommandHandler(
         var game = await gameRepository.GetByIdAsync(request.GameId, cancellationToken);
         if (game is null) throw new GameNotFoundException(request.GameId);
 
-        if (IsMoveMade(request, game)) return game.ToDto();
+        if (IsMoveMade(request, game))
+        {
+            logger.LogInformation("{Player} player already make this move (row: {Row}, column: {Column})", request.Player, request.Row, request.Col);
+            
+            return game.ToDto();
+        }
 
         lock (_lockObject)
         {
@@ -37,9 +44,11 @@ public class MakeMoveCommandHandler(
     
             if (game.Version != request.ExpectedVersion)
             {
-                if (IsMoveMadeByRequestPlayer(request, game)) return game.ToDto();
+                if (!IsMoveMadeByRequestPlayer(request, game)) throw new ConcurrencyException();
                 
-                throw new ConcurrencyException();
+                logger.LogInformation("{Player} player already make this move (row: {Row}, column: {Column})", request.Player, request.Row, request.Col);
+                    
+                return game.ToDto();
             }
 
             unitOfWork.BeginTransactionAsync(cancellationToken).GetAwaiter().GetResult();
@@ -51,11 +60,17 @@ public class MakeMoveCommandHandler(
                 
                 unitOfWork.CommitAsync(cancellationToken).GetAwaiter().GetResult();
                 
+                logger.LogInformation("{Player} player make move (row: {Row}, column: {Column})", request.Player, request.Row, request.Col);
+                
                 return game.ToDto();
             }
             catch
             {
                 unitOfWork.RollbackAsync(cancellationToken).GetAwaiter().GetResult();
+                
+                logger.LogError("Game with id: {Id}, current player: {Player}, request player: {RequestPlayer}, move: {Row}, {Col}, version: {Version}, expected version: {ExVersion}", 
+                    game.Id, game.CurrentPlayer, request.Player, request.Row, request.Col, game.Version, request.ExpectedVersion);
+                
                 throw;
             }
         }

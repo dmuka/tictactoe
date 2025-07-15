@@ -1,6 +1,7 @@
 ﻿using Application.UseCases.GetGame;
 using Domain.Aggregates.Game;
 using Domain.Exceptions;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace UnitTests.Application.UseCases;
@@ -14,7 +15,7 @@ public class GetGameQueryHandlerTests
         
     private readonly Mock<IGameRepository> _mockRepository;
     private readonly Mock<IRandomProvider> _randomMock;
-        
+
     private readonly GetGameQueryHandler _handler;
 
     public GetGameQueryHandlerTests()
@@ -23,8 +24,10 @@ public class GetGameQueryHandlerTests
 
         _randomMock = new Mock<IRandomProvider>();
         _randomMock.Setup(r => r.NextDouble()).Returns(0.5);
+
+        var loggerMock = new Mock<ILogger<GetGameQueryHandler>>();
         
-        _handler = new GetGameQueryHandler(_mockRepository.Object);
+        _handler = new GetGameQueryHandler(_mockRepository.Object, loggerMock.Object);
     }
 
     [Fact]

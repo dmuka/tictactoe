@@ -2,13 +2,14 @@
 using Domain.Aggregates.Game;
 using Domain.Exceptions;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UseCases.GetGame;
 
 /// <summary>
 /// Handles the retrieval of a game by its unique identifier.
 /// </summary>
-public class GetGameQueryHandler(IGameRepository gameRepository) : IRequestHandler<GetGameQuery, GameDto>
+public class GetGameQueryHandler(IGameRepository gameRepository, ILogger<GetGameQueryHandler> logger) : IRequestHandler<GetGameQuery, GameDto>
 {
     /// <summary>
     /// Handles the retrieval of a game by its unique identifier.
@@ -22,7 +23,9 @@ public class GetGameQueryHandler(IGameRepository gameRepository) : IRequestHandl
         var game = await gameRepository.GetByIdAsync(query.GameId, cancellationToken);
             
         if (game is null) throw new GameNotFoundException(query.GameId);
-            
+        
+        logger.LogInformation("Requested game with id: {Id}", game.Id);
+        
         return game.ToDto();
     }
 }

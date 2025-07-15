@@ -2,6 +2,7 @@
 using Application.DTOs;
 using Application.UseCases.CreateGame;
 using Domain.Aggregates.Game;
+using Microsoft.Extensions.Logging;
 using Moq;
 
 namespace UnitTests.Application.UseCases;
@@ -15,18 +16,19 @@ public class CreateGameCommandHandlerTests
         
     private readonly Mock<IGameRepository> _mockGameRepository;
     private readonly Mock<IUnitOfWork> _mockUnitOfWork;
-        
+
     private readonly CreateGameCommandHandler _handler;
 
     public CreateGameCommandHandlerTests()
     {
         _mockGameRepository = new Mock<IGameRepository>();
         _mockUnitOfWork = new Mock<IUnitOfWork>();
+        var mockLogger = new Mock<ILogger<CreateGameCommandHandler>>();
 
         var randomMock = new Mock<IRandomProvider>();
         randomMock.Setup(randomProvider => randomProvider.NextDouble()).Returns(0.5);
             
-        _handler = new CreateGameCommandHandler(_mockGameRepository.Object, _mockUnitOfWork.Object, randomMock.Object);
+        _handler = new CreateGameCommandHandler(_mockGameRepository.Object, _mockUnitOfWork.Object, randomMock.Object, mockLogger.Object);
     }
 
     [Fact]

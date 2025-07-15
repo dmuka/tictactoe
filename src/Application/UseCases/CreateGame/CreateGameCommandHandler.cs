@@ -2,6 +2,7 @@
 using Application.DTOs;
 using Domain.Aggregates.Game;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Application.UseCases.CreateGame;
 
@@ -11,7 +12,8 @@ namespace Application.UseCases.CreateGame;
 public class CreateGameCommandHandler(
     IGameRepository gameRepository,
     IUnitOfWork unitOfWork,
-    IRandomProvider randomProvider) : IRequestHandler<CreateGameCommand, GameDto>
+    IRandomProvider randomProvider,
+    ILogger<CreateGameCommandHandler> logger) : IRequestHandler<CreateGameCommand, GameDto>
 {
     /// <summary>
     /// Handles the creation of a new game based on the provided command.
@@ -25,6 +27,7 @@ public class CreateGameCommandHandler(
         
         await gameRepository.AddAsync(game, cancellationToken);
         await unitOfWork.CommitAsync(cancellationToken);
+        logger.LogInformation("Created new game with id: {Id}", game.Id);
         
         return game.ToDto();
     }
