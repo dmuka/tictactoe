@@ -109,6 +109,24 @@ public class GamesControllerTests : IClassFixture<WebApplicationFactory<Program>
     }
 
     [Fact]
+    public async Task MakeMove_WithInvalidETag_ReturnsBadRequest()
+    {
+        // Arrange
+        var createResponse = await _client.PostAsync("/api/games", null);
+        var game = await createResponse.Content.ReadFromJsonAsync<GameDto>();
+        
+        // First move: Version up
+        _client.DefaultRequestHeaders.Add("If-Match", $"W/\"X\"");
+        
+        // Act
+        var response = await _client.PostAsJsonAsync(
+            $"/api/games/{game?.Id}/moves", _moveXPlayerRow0ColO);
+        
+        // Assert
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
     public async Task HealthCheck_ReturnsHealthy()
     {
         // Act
@@ -169,5 +187,16 @@ public class GamesControllerTests : IClassFixture<WebApplicationFactory<Program>
         Assert.Equal(HttpStatusCode.OK, response1.StatusCode);
         Assert.Equal(HttpStatusCode.OK, response2.StatusCode);
         Assert.Equal(response1.Headers.ETag?.Tag, response2.Headers.ETag?.Tag);
+    }
+
+    [Fact]
+    public async Task GetAllGames_GetGames()
+    {
+        // Arrange
+        // Act
+        var getAllGamesResponse = await _client.GetAsync("/api/games");
+        
+        // Assert
+        getAllGamesResponse.EnsureSuccessStatusCode();
     }
 }
